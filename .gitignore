@@ -1,0 +1,9 @@
+*.cmo
+*.cmi
+*.cma
+*.annot
+test.*
+.depend
+.paths
+.project
+.settings/
