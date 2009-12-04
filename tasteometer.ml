@@ -1,0 +1,2 @@
+(*implemented methods:
+Tasteometer.compare*)

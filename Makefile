@@ -5,7 +5,12 @@ PACKAGES:= curl,expat
 
 OC_OPTS:=-annot
 
-CMOS:=parse_xml.cmo lastfm.cmo 
+BASE_CMOS:= parse_xml.cmo lastfm.cmo
+MODULE_CMOS:= album.cmo event.cmo group.cmo library.cmo playlist.cmo tag.cmo user.cmo
+MODULE_CMOS:= $(MODULE_CMOS) artist.cmo geo.cmo radio.cmo tasteometer.cmo track.cmo venue.cmo
+
+CMOS:=$(BASE_CMOS) $(MODULE_CMOS)
+
 TARGETS:= lastfm.cma
 
 
@@ -21,7 +26,7 @@ test: test.cmo lastfm.cma
 	ocamlfind $(OC) $(OC_OPTS) -package $(PACKAGES) -c $<
 
 clean:
-	rm -f *.cmo *.cmi test
+	rm -f *.cmo *.cmi *.cma *.annot test 
 
 depend:
 	ocamldep *.mli *.ml > .depend
