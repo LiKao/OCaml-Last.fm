@@ -20,10 +20,10 @@ let printf_debug level a =
       Printf.ifprintf stdout a
    ;;
 
-type connection = 
+type 'a connection = 
 	{key : string; 
 	 secret : string;
-	 session_key : string; 
+	 session_key : string option; 
 	 conn : Curl.t};;
 type call = string * string list;;
 
@@ -86,26 +86,25 @@ let get_session_key conn key secret =
 	in
   Parse_xml.get_value (List.hd session_key)
    
-let init agent key secret ?session_key () =
+let init agent key secret =
 	printf_debug Message "Initializing Lastfm service\n";
   printf_debug Message "Initializing Curl connection and setting user agent\n";
   let conn = Curl.init() in
   Curl.set_useragent conn agent;
-  let session_key = 
-  	match session_key with 
-    	None -> get_session_key conn key secret
-		|  Some key -> key
-	in
   {key = key;
    secret = secret;
-   session_key = session_key;
+   session_key = None;
    conn = conn}
 
-
+let authorize connection session_key =
+	  {connection with session_key = Some session_key}
+  	
 let call_method method_name params connection =
    let call = [("method",method_name)] @
                params @
-		   				[("api_key",connection.key);
-		    			 ("sk",connection.session_key)]
+		   				[("api_key",connection.key)] @
+							match connection.session_key with
+								Some sk -> [("sk",sk)]
+							| None -> []
    in
    make_call connection.conn call connection.secret

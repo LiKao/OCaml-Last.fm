@@ -1,0 +1,12 @@
+val getEvents_xml : string -> 'a Lastfm.connection -> string
+val getImages_xml : string -> 'a Lastfm.connection -> string
+val getInfo_xml : string -> 'a Lastfm.connection -> string
+val getPastEvents_xml : string -> 'a Lastfm.connection -> string
+val getPodcast_xml : string -> 'a Lastfm.connection -> string
+val getShouts_xml : string -> 'a Lastfm.connection -> string
+val getSimilar_xml : string -> 'a Lastfm.connection -> string
+val getTags_xml : string -> [`Authorized] Lastfm.connection -> string
+val getTopAlbums_xml : string -> 'a Lastfm.connection -> string
+val getTopFans_xml : string -> 'a Lastfm.connection -> string
+val getTopTags_xml : string -> 'a Lastfm.connection -> string
+val getTopTracks_xml : string -> 'a Lastfm.connection -> string

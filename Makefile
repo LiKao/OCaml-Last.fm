@@ -24,6 +24,12 @@ test: test.cmo lastfm.cma
 
 %.cmo: %.ml
 	ocamlfind $(OC) $(OC_OPTS) -package $(PACKAGES) -c $<
+	
+%.cmi: %.mli
+	ocamlfind $(OC) $(OC_OPTS) -package $(PACKAGES) -c $<
+	
+%.mli: %.ml
+	test -e $@ || ocamlfind $(OC) $(OC_OPTS) -package $(PACKAGES) -I . -i $< > $@
 
 clean:
 	rm -f *.cmo *.cmi *.cma *.annot test 
