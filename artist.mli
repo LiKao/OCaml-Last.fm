@@ -10,3 +10,4 @@ val getTopAlbums_xml : string -> 'a Base.t -> string
 val getTopFans_xml : string -> 'a Base.t -> string
 val getTopTags_xml : string -> 'a Base.t -> string
 val getTopTracks_xml : string -> 'a Base.t -> string
+val search : string -> ?limit:int -> ?page:int -> 'a Base.t -> string
