@@ -1,11 +1,31 @@
-type debug_lvl = Error | Message | Warning | Notice | Signature | Url
-val debug_lvl : debug_lvl list ref
-val printf_debug : debug_lvl -> ('a, out_channel, unit) format -> 'a
+(** OCaml API to the Last.fm functions*)
 
-type 'a connection 
+(** {1 global functions}*)
+(*******************************************************************)
+(** Type to identify connections to the Lastfm service *)
+type 'a t 
+val init : string -> string -> string -> [`Unauthorized] t
+val authorize : 'a t -> string -> [`Authorized] t
 
-val init : string -> string -> string -> [`Unauthorized] connection
+module Artist : sig
+	(** {1 Access to the Last.fm artist.* functions}*)
 
-val authorize : 'a connection -> string -> [`Authorized] connection
+	(*******************************************************************)
+	(** {2 XML Functions}*)
+	(** Functions to access unparsed XML data from the Last.fm service *)
+	(*******************************************************************)
 
-val call_method : string -> (string * string) list -> 'a connection -> string
+	(** Get event Data for an artist *)
+	val getEvents_xml : string -> 'a t -> string
+	val getImages_xml : string -> 'a t -> string
+	val getInfo_xml : string -> 'a t -> string
+	val getPastEvents_xml : string -> 'a t -> string
+	val getPodcast_xml : string -> 'a t -> string
+	val getShouts_xml : string -> 'a t -> string
+	val getSimilar_xml : string -> 'a t -> string
+	val getTags_xml : string -> [`Authorized] t -> string
+	val getTopAlbums_xml : string -> 'a t -> string
+	val getTopFans_xml : string -> 'a t -> string
+	val getTopTags_xml : string -> 'a t -> string
+	val getTopTracks_xml : string -> 'a t -> string	
+end

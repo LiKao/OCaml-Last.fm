@@ -17,7 +17,7 @@ Artist.search
 Artist.share
 Artist.shout*)
 
-open Lastfm
+open Base
 
 let getXXX_xml xxx artist_name connection =
    let params = [("artist",artist_name)] in
