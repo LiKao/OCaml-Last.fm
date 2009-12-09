@@ -15,7 +15,9 @@ module Artist : sig
 	(** Functions to access unparsed XML data from the Last.fm service *)
 	(*******************************************************************)
 
-	val getEvents_xml : string -> 'a t -> string
+	type artist_id = string
+
+	val getEvents_xml : artist_id -> 'a t -> string
 	(** Get information about upcomming events for an artist.
 
 	Authentication {b not} required.
@@ -65,7 +67,7 @@ module Artist : sig
 		...
 		</events>]}*)
 	
-	val getImages_xml : string -> 'a t -> string
+	val getImages_xml : artist_id -> 'a t -> string
 	(** Get images for a given Artist.
 
 	Returns adresses available Images in various sizes.
@@ -103,7 +105,7 @@ module Artist : sig
 		  ..
 		</images>]}*)
 		
-	val getInfo_xml : string -> 'a t -> string
+	val getInfo_xml : artist_id -> 'a t -> string
 	(** Get complete information for an artist.
 
 	Information includes biography, images, similar artists, tags and statistics.
@@ -149,7 +151,7 @@ module Artist : sig
 		  </bio>
 		</artist>]}*)
 	
-	val getPastEvents_xml : string -> 'a t -> string
+	val getPastEvents_xml : artist_id -> 'a t -> string
 	(** Get past events an artist has done.
 
 	Authentication {b not} required.
@@ -208,7 +210,7 @@ module Artist : sig
 		  </event>
 		</events>]}*)
 		
-	val getPodcast_xml : string -> 'a t -> string
+	val getPodcast_xml : artist_id -> 'a t -> string
 	(** Get information about free podcasts and mp3s from an artist.
 
 	Authentication {b not} required.
@@ -239,7 +241,7 @@ module Artist : sig
 		  </item>
 		</channel>]}*)
 	
-	val getShouts_xml : string -> 'a t -> string
+	val getShouts_xml : artist_id -> 'a t -> string
 	(** Get shouts for an artist.
 
 	Authentication {b not} required.
@@ -256,7 +258,7 @@ module Artist : sig
 		  ...
 		</shouts>]}*)
 	
-	val getSimilar_xml : string -> 'a t -> string
+	val getSimilar_xml : artist_id -> 'a t -> string
 	(** Get a list of artists similar to a given artist.
 
 	Authentication {b not} required.
@@ -275,7 +277,7 @@ module Artist : sig
 		        <artist>
 		...]}*)
 	
-	val getTags_xml : string -> [`Authorized] t -> string
+	val getTags_xml : artist_id -> [`Authorized] t -> string
 	(** Get tags assigned to an artist by the current user.
 
 	{b Authentication required.}
@@ -291,7 +293,7 @@ module Artist : sig
 		  ...
 		</tags>]}*)
 	
-	val getTopAlbums_xml : string -> 'a t -> string
+	val getTopAlbums_xml : artist_id -> 'a t -> string
 	(** Get the top albums of an artist. Sorted by popularity.
 
 	Authentication {b not} required.
@@ -312,7 +314,7 @@ module Artist : sig
 		  ...
 		</topalbums>]}*)
 	
-	val getTopFans_xml : string -> 'a t -> string
+	val getTopFans_xml : artist_id -> 'a t -> string
 	(** Get the top fans, based on listening behaviour.
 
 	Authentication {b not} required.
@@ -332,7 +334,7 @@ module Artist : sig
 		  ...
 		</topfans>]}*)
 	
-	val getTopTags_xml : string -> 'a t -> string
+	val getTopTags_xml : artist_id -> 'a t -> string
 	(** Get the top Tags for an artist.
 
 	Authentication {b not} required.
@@ -348,7 +350,7 @@ module Artist : sig
 		  ...
 		</toptags>]}*)
 	
-	val getTopTracks_xml : string -> 'a t -> string
+	val getTopTracks_xml : artist_id -> 'a t -> string
 	(** Get the most popular tracks of an artist.
 
 	Authentication {b not} required.
@@ -370,11 +372,11 @@ module Artist : sig
 		  ...
 		</toptracks>]}*)	
 		
-	val search : string -> ?limit:int -> ?page:int -> 'a Base.t -> string
+	val search : string -> ?limit:int -> ?page:int -> 'a t -> string
 	(** Search for an artist.
 
 	Authentication {b not} required. 
-	@param limit the maximum number of results per page
+	@param limit the number of results per page (maximum 20)
 	@param page number of the page that is returned
 	
 	@return A string with the last.fm xml-data
@@ -398,4 +400,12 @@ module Artist : sig
 			...
 		  </artistmatches>
 		</results>]}*)
+end
+
+module Album : sig
+	type album_id = {album_artist: string; album: string}
+	
+	val getInfo_xml : album_id -> 'a t -> string
+	val getTags_xml : album_id -> [`Authorized] t -> string
+	val search : string -> ?limit:int -> ?page:int -> 'a t -> string
 end

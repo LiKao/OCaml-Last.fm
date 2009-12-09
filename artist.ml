@@ -21,9 +21,13 @@ Artist.shout*)
 
 open Base
 
-let getXXX_xml xxx artist_name connection =
-   let params = [("artist",artist_name)] in
-   call_method ("artist.get" ^ xxx) params connection
+type artist_id = string
+
+let artist_id_to_param artist_id = [("artist",artist_id)] 
+
+let getXXX_xml yyy artist_id connection =
+	xxxgetyyy_xml "artist" yyy artist_id artist_id_to_param connection
+   
 
 let getEvents_xml name connection =
 	getXXX_xml "Events" name connection
@@ -62,20 +66,6 @@ let getTopTracks_xml name connection =
 	getXXX_xml "TopTracks" name connection
 	
 let search name ?limit ?page connection =
-	let limit_param = 
-		match limit with 
-		None -> []
-	| Some limit -> [("limit",Printf.sprintf "%i" limit)]
-	in
-	let page_param =
-		match page with
-			None -> []
-		| Some page -> [("page",Printf.sprintf "%i" page)]
-	in
-	let params = [("artist",name)] @ 
-	              limit_param @ 
-							  page_param 
-	in
-	call_method "artist.search" params connection
+	searchXXX "artist" name ?limit ?page connection
 	
 	

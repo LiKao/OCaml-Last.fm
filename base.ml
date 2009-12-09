@@ -25,7 +25,10 @@ type 'a t =
 	 secret : string;
 	 session_key : string option; 
 	 conn : Curl.t};;
-type call = string * string list;;
+
+type mbid = string;;
+
+type param = (string * string) list
 
 let basename = "http://ws.audioscrobbler.com/2.0/";;
 
@@ -112,3 +115,24 @@ let call_method method_name params connection =
 							| None -> []
    in
    make_call connection.conn call connection.secret
+	
+let xxxgetyyy_xml xxx yyy id id_to_param connection =
+   let params = id_to_param id in
+   call_method (xxx ^ ".get" ^ yyy) params connection
+	
+let searchXXX xxx name ?limit ?page connection =
+	let limit_param = 
+		match limit with 
+		None -> []
+	| Some limit -> [("limit",Printf.sprintf "%i" limit)]
+	in
+	let page_param =
+		match page with
+			None -> []
+		| Some page -> [("page",Printf.sprintf "%i" page)]
+	in
+	let params = [(xxx,name)] @ 
+	              limit_param @ 
+							  page_param 
+	in
+	call_method (xxx ^ ".search") params connection
