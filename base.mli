@@ -11,5 +11,5 @@ val authorize : 'a t -> string -> [`Authorized] t
 
 (* Internal methods to factor out common code *)
 val call_method : string -> (string * string) list -> 'a t -> string
-val xxxgetyyy_xml : string -> string -> 'b -> ('b -> param) -> 'a t -> string
+val xxxgetyyy_xml : string -> string -> 'b -> ('b -> param) -> ?extra:param -> 'a t -> string
 val searchXXX : string -> string -> ?limit:int -> ?page:int -> 'a t -> string

@@ -4,3 +4,4 @@ Group.getWeeklyAlbumChart
 Group.getWeeklyArtistChart
 Group.getWeeklyChartList
 Group.getWeeklyTrackChart*)
+

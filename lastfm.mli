@@ -7,15 +7,108 @@ type 'a t
 val init : string -> string -> string -> [`Unauthorized] t
 val authorize : 'a t -> string -> [`Authorized] t
 
-module Artist : sig
-	(** {1 Access to the Last.fm artist.* functions}*)
+module Album : sig
+	type album_id = {album_artist: string; album: string}
+	
+	(** {1 Access to the Last.fm album.* functions}*)
 
 	(*******************************************************************)
 	(** {2 direct access}*)
 	(** Functions to access unparsed XML data from the Last.fm service *)
 	(*******************************************************************)
 
+	val getInfo_xml : album_id -> 'a t -> string
+	(** Get all information about an album.
+
+	Information includes name of album and artist, number of listeners,
+	tags and images.
+
+	Authentication {b not} required.
+	@return A string with the last.fm xml-data
+	
+	Sample respone:
+	{[
+		<album>
+		  <name>Believe</name>
+		  <artist>Cher</artist>
+		  <id>2026126</id>
+		  <mbid>61bf0388-b8a9-48f4-81d1-7eb02706dfb0</mbid>
+		  <url>http://www.last.fm/music/Cher/Believe</url>
+		  <releasedate>    6 Apr 1999, 00:00</releasedate>
+		  <image size="small">...</image>
+		  <image size="medium">...</image>
+		  <image size="large">...</image>
+		  <listeners>47602</listeners>
+		  <playcount>212991</playcount>
+		  <toptags>
+		    <tag>
+		      <name>pop</name>
+		      <url>http://www.last.fm/tag/pop</url>
+		    </tag>
+		    ...
+		  </toptags>
+		</album>]}*)
+	
+	val getTags_xml : album_id -> [`Authorized] t -> string
+	(** Get all user tags for an album.
+
+	Information includes name of album and artist, number of listeners,
+	tags and images.
+
+	{b Authentication required.}
+	@return A string with the last.fm xml-data
+	
+	Sample respone:
+	{[
+		<tags artist="Sally Shapiro" album="Disco Romance">
+		  <tag>
+		    <name>swedish</name>
+		    <url>http://www.last.fm/tag/swedish</url>
+		  </tag>
+		  ...
+		</tags>]}*)
+	
+	val search : string -> ?limit:int -> ?page:int -> 'a t -> string
+	(** Search for an album.
+
+	Authentication {b not} required. 
+	@param limit the number of results per page (maximum 20)
+	@param page number of the page that is returned
+	
+	@return A string with the last.fm xml-data
+	
+	Sample respone:
+	{[
+		<results for="cher" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+		  <opensearch:Query role="request" searchTerms="cher" startPage="1"/>
+		  <opensearch:totalResults>386</opensearch:totalResults>
+		  <opensearch:startIndex>0</opensearch:startIndex>
+		  <opensearch:itemsPerPage>20</opensearch:itemsPerPage>
+		  <artistmatches>
+		    <artist>
+		      <name>Cher</name>
+		      <mbid>bfcc6d75-a6a5-4bc6-8282-47aec8531818</mbid>
+		      <url>www.last.fm/music/Cher</url>
+		      <image_small>http://userserve-ak.last.fm/serve/50/342437.jpg</image_small>
+		      <image>http://userserve-ak.last.fm/serve/160/342437.jpg</image>
+		      <streamable>1</streamable>
+		    </artist>
+			...
+		  </artistmatches>
+		</results>]}*)
+		
+end
+
+module Artist : sig
+	(** {1 Access to the Last.fm artist.* functions}*)
+
 	type artist_id = string
+	(** Type of artist identifiers *)
+
+	(*******************************************************************)
+	(** {2 direct access}*)
+	(** Functions to access unparsed XML data from the Last.fm service *)
+	(*******************************************************************)
 
 	val getEvents_xml : artist_id -> 'a t -> string
 	(** Get information about upcomming events for an artist.
@@ -402,10 +495,32 @@ module Artist : sig
 		</results>]}*)
 end
 
-module Album : sig
-	type album_id = {album_artist: string; album: string}
+module Event : sig
+	type event_id = int
+
+	val getAttendees_xml : int -> 'a t -> string
+	val getInfo : int -> 'a t -> string
+	val getShouts : int -> 'a t -> string
+end
+
+module Geo : sig
+	type geoPos = { latitude : float; longitude : float; }
+	type geo_id = Name of string | Pos of geoPos
 	
-	val getInfo_xml : album_id -> 'a t -> string
-	val getTags_xml : album_id -> [`Authorized] t -> string
-	val search : string -> ?limit:int -> ?page:int -> 'a t -> string
+	type metro_id = { metro_country : string; metro : string; }
+	
+	type time_range = { start_time : float; end_time : float; }
+	
+	val getEvents_xml :
+	  geo_id -> ?page:int -> ?distance:float -> 'a t -> string
+	
+	val getMetroArtistChart_xml :
+	  metro_id -> ?range:time_range -> 'a t -> string
+	val getMetroTrackChart_xml :
+	  metro_id -> ?range:time_range -> 'a t -> string
+	val getMetroUniqueArtistChart_xml :
+	  metro_id -> ?range:time_range -> 'a t -> string
+	val getMetroUniqueTrackChart_xml :
+	  metro_id -> ?range:time_range -> 'a t -> string
+	val getMetroWeeklyChartlist_xml : 'a t -> string
 end

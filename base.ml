@@ -116,9 +116,14 @@ let call_method method_name params connection =
    in
    make_call connection.conn call connection.secret
 	
-let xxxgetyyy_xml xxx yyy id id_to_param connection =
-   let params = id_to_param id in
-   call_method (xxx ^ ".get" ^ yyy) params connection
+let xxxgetyyy_xml xxx yyy id id_to_param ?extra connection =
+  let params = id_to_param id in
+	let extra_params =
+		match extra with
+			None -> []
+		| Some extra_params -> extra_params
+	in
+  call_method (xxx ^ ".get" ^ yyy) (params @ extra_params) connection
 	
 let searchXXX xxx name ?limit ?page connection =
 	let limit_param = 

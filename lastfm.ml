@@ -7,3 +7,11 @@ end
 module Album = struct
 	include Album
 end
+
+module Event = struct
+	include Event
+end
+
+module Geo = struct
+	include Geo
+end
