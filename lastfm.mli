@@ -107,6 +107,14 @@ module Artist : sig
 	type artist_id = string
 	(** Type of artist identifiers *)
 
+	type artist = {
+		artist_name   : string;
+		artist_mbid   : Base.mbid option;
+		artist_url    : string;
+		artist_images : Base.image list;
+		artist_streamable : bool} 
+
+	val getSimilar : string -> 'a t -> (artist * float) list
 	val getTopTags : string -> 'a t -> (Tag.tag * int) list
 
 	(*******************************************************************)

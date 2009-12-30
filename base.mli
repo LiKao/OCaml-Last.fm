@@ -13,3 +13,5 @@ val authorize : 'a t -> string -> [`Authorized] t
 val call_method : string -> (string * string) list -> 'a t -> string
 val xxxgetyyy_xml : string -> string -> 'b -> ('b -> param) -> ?extra:param -> 'a t -> string
 val searchXXX : string -> string -> ?limit:int -> ?page:int -> 'a t -> string
+
+type image = {image_url : string; image_size : string}

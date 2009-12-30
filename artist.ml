@@ -23,6 +23,13 @@ open Base
 
 type artist_id = string
 
+type artist = {
+	artist_name   : string;
+	artist_mbid   : mbid option;
+	artist_url    : string;
+	artist_images : image list;
+	artist_streamable : bool} 
+
 let artist_id_to_param artist_id = [("artist",artist_id)] 
 
 let getXXX_xml yyy artist_id connection =
@@ -74,7 +81,7 @@ let getTopTags name connection =
 	let tree = Parse_xml.make_tree xml in
 	let tag_trees = Parse_xml.find_all [Parse_xml.Name "lfm"; 
 			    	                          Parse_xml.Name "toptags";
-																			Parse_xml.AnyNode ] tree
+																			Parse_xml.Name "tag" ] tree
 	in
 	let makeTag tree = 
 		let tag_name_value = Parse_xml.find_all [Parse_xml.Name "name";
@@ -89,5 +96,44 @@ let getTopTags name connection =
 		 int_of_string (Parse_xml.extract_value tag_count_value))
 	in
 	List.map makeTag tag_trees
+	
+let getSimilar name connection =
+	let xml = getSimilar_xml name connection in
+	let tree = Parse_xml.make_tree xml in
+	let artist_trees = Parse_xml.find_all [Parse_xml.Name "lfm";
+	                                       Parse_xml.Name "similarartists";
+																				 Parse_xml.Name "artist"] tree
+  in
+	let extract_artist_info artist_xml =
+		let artist_name_value = Parse_xml.find_all [Parse_xml.Name "name";
+		                                            Parse_xml.AnyVal] artist_xml in
+		let artist_mbid_value = Parse_xml.find_all [Parse_xml.Name "mbid";
+		                                            Parse_xml.AnyVal] artist_xml in
+		let artist_url_value  = Parse_xml.find_all [Parse_xml.Name "url";
+		                                            Parse_xml.AnyVal] artist_xml in
+		let artist_streamable_value = Parse_xml.find_all [Parse_xml.Name "streamable";
+		                                                  Parse_xml.AnyVal] artist_xml in
+    let artist_images_values = Parse_xml.find_all [Parse_xml.Name "image"] in
+		let artist_match_value = Parse_xml.find_all [Parse_xml.Name "match";
+		                                             Parse_xml.AnyVal] artist_xml in
+		let artist_mbid = 
+			try Some (Parse_xml.extract_value artist_mbid_value)
+			with Parse_xml.No_Value -> None
+		in
+		let artist_is_streamable = 
+			(int_of_string (Parse_xml.extract_value artist_streamable_value)) != 0
+		in
+		({artist_name   = Parse_xml.extract_value artist_name_value;
+		  artist_mbid   = artist_mbid;
+			artist_url    = Parse_xml.extract_value artist_url_value;
+			artist_images = [];
+			artist_streamable = artist_is_streamable},
+			float_of_string (Parse_xml.extract_value artist_match_value))
+		in
+		List.map extract_artist_info artist_trees
+			
+	
+	
+	
   		 
 	

@@ -139,3 +139,5 @@ let searchXXX xxx name ?limit ?page connection =
 							  page_param 
 	in
 	call_method (xxx ^ ".search") params connection
+	
+type image = {image_url : string; image_size : string} 

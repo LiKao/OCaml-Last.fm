@@ -83,5 +83,10 @@ let rec find_all path tree =
 					| Value  _ -> []
 				end
 
+exception No_Value
+
 let extract_value valueList =
-	get_value (List.hd valueList)
+	match valueList with
+		value :: rest -> get_value value
+	| [] -> raise No_Value
+	
