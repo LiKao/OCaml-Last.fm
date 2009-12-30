@@ -15,3 +15,7 @@ end
 module Geo = struct
 	include Geo
 end
+
+module Tag = struct
+	include Tag
+end

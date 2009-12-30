@@ -68,4 +68,26 @@ let getTopTracks_xml name connection =
 let search name ?limit ?page connection =
 	searchXXX "artist" name ?limit ?page connection
 	
+
+let getTopTags name connection =
+	let xml = getTopTags_xml name connection in
+	let tree = Parse_xml.make_tree xml in
+	let tag_trees = Parse_xml.find_all [Parse_xml.Name "lfm"; 
+			    	                          Parse_xml.Name "toptags";
+																			Parse_xml.AnyNode ] tree
+	in
+	let makeTag tree = 
+		let tag_name_value = Parse_xml.find_all [Parse_xml.Name "name";
+		                                         Parse_xml.AnyVal] tree in
+    let tag_url_value = Parse_xml.find_all [Parse_xml.Name "url";
+		                                         Parse_xml.AnyVal] tree in
+    let tag_count_value = Parse_xml.find_all [Parse_xml.Name "count";
+		                                         Parse_xml.AnyVal] tree in																																												
+																						
+		({Tag.tag_name = Parse_xml.extract_value tag_name_value;
+		 Tag.tag_url = Parse_xml.extract_value tag_url_value},
+		 int_of_string (Parse_xml.extract_value tag_count_value))
+	in
+	List.map makeTag tag_trees
+  		 
 	

@@ -4,8 +4,8 @@ type xml_tree =
 
 type specifier = 
    Name of string
-|  Any
-|  Anyval
+|  AnyNode
+|  AnyVal
 
 let make_tree xml =
    (* we walk the xml tree and construct all nodes we encounter.
@@ -62,22 +62,26 @@ let get_value branch =
    match branch with
       Node _ -> failwith "get_value called on a node"
    |  Value v ->  v
-   
-let match_specifier branch spec =
+
+let match_specifier spec branch =
    match spec with
       Name name -> is_node branch && 
                                let bname = get_node_name branch in
                                (compare bname name == 0)
-    | Any -> is_node branch
-    | Anyval -> not (is_node branch)
+    | AnyNode -> is_node branch
+    | AnyVal -> not (is_node branch)
    
 let rec find_all path tree =
    match path with
       [] -> [tree]
    |  spec :: rest ->
-	 if match_specifier tree spec then
-	   match tree with
-		Node (_,_,childs) -> List.concat (List.map (find_all rest) childs)
-	   |    Value v -> if rest == [] then [Value v] else []
-	 else
-	 []
+				begin
+					match tree with
+						Node (_,_,childs) -> 
+							let matched = List.filter (match_specifier spec) childs in
+							List.concat (List.map (find_all rest) matched)
+					| Value  _ -> []
+				end
+
+let extract_value valueList =
+	get_value (List.hd valueList)

@@ -8,9 +8,11 @@ val init : string -> string -> string -> [`Unauthorized] t
 val authorize : 'a t -> string -> [`Authorized] t
 
 module Album : sig
-	type album_id = {album_artist: string; album: string}
-	
+		
 	(** {1 Access to the Last.fm album.* functions}*)
+
+	type album_id = {album_artist: string; album_name: string}
+	(** type of album Identifiers *)
 
 	(*******************************************************************)
 	(** {2 direct access}*)
@@ -104,6 +106,8 @@ module Artist : sig
 
 	type artist_id = string
 	(** Type of artist identifiers *)
+
+	val getTopTags : string -> 'a t -> (Tag.tag * int) list
 
 	(*******************************************************************)
 	(** {2 direct access}*)
@@ -523,4 +527,8 @@ module Geo : sig
 	val getMetroUniqueTrackChart_xml :
 	  metro_id -> ?range:time_range -> 'a t -> string
 	val getMetroWeeklyChartlist_xml : 'a t -> string
+end
+
+module Tag : sig
+	type tag = {tag_name : string; tag_url : string}
 end

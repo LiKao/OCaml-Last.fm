@@ -74,5 +74,5 @@ let getMetroUniqueTrackChart_xml metro_id ?range connection =
 	getXXX_metro_xml "MetroUniqueTrackChart" metro_id ?range connection
 
 let getMetroWeeklyChartlist_xml connection =
-	call_method "getMetroWeeklyChartlist" [] connection
+	call_method "geo.getMetroWeeklyChartlist" [] connection
 	 

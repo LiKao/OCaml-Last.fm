@@ -13,3 +13,5 @@ val getTopFans_xml : artist_id -> 'a Base.t -> string
 val getTopTags_xml : artist_id -> 'a Base.t -> string
 val getTopTracks_xml : artist_id -> 'a Base.t -> string
 val search : string -> ?limit:int -> ?page:int -> 'a Base.t -> string
+val getTopTags : string -> 'a Base.t -> (Tag.tag * int) list
+

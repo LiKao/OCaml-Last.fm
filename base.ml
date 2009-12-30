@@ -69,10 +69,9 @@ let get_session_key conn key secret =
 	in
 	let res_xml = make_call conn call secret in
 	let res = Parse_xml.make_tree res_xml in
-	let tokenval = Parse_xml.find_all [Parse_xml.Name "root"; 
-                                     Parse_xml.Name "lfm"; 
+	let tokenval = Parse_xml.find_all [Parse_xml.Name "lfm"; 
 						                         Parse_xml.Name "token";
-                                     Parse_xml.Anyval] res 
+                                     Parse_xml.AnyVal] res 
 	in
 	let token = Parse_xml.get_value (List.hd tokenval) in
 	printf_debug Message "Token aquired.\n The token is %s\n" token;
@@ -85,11 +84,10 @@ let get_session_key conn key secret =
 	let res_xml =make_call conn call secret in
   Printf.printf "%s" res_xml;
   let res = Parse_xml.make_tree res_xml in
-  let session_key = Parse_xml.find_all [Parse_xml.Name "root"; 
-  																			Parse_xml.Name "lfm"; 
+  let session_key = Parse_xml.find_all [Parse_xml.Name "lfm"; 
 						              							Parse_xml.Name "session";
 							      										Parse_xml.Name "key";
-                                       	Parse_xml.Anyval] res 
+                                       	Parse_xml.AnyVal] res 
 	in
   Parse_xml.get_value (List.hd session_key)
    

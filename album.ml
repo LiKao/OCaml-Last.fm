@@ -10,10 +10,10 @@ Album.addTags
 
 open Base
 
-type album_id = {album_artist: string; album: string}
+type album_id = {album_artist: string; album_name: string}
 
 let album_id_to_param album_id = [("artist",album_id.album_artist);
-                                  ("album",album_id.album)]
+                                  ("album",album_id.album_name)]
 	
 
 let getXXX_xml yyy album_id connection =

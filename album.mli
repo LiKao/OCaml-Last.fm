@@ -1,4 +1,4 @@
-type album_id = {album_artist: string; album: string}
+type album_id = {album_artist: string; album_name: string}
 
 val getInfo_xml : album_id -> 'a Base.t -> string
 val getTags_xml : album_id -> [`Authorized] Base.t -> string
