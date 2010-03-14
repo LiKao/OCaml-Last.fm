@@ -19,6 +19,14 @@ val getTopAlbums_xml : artist_id -> 'a Base.t -> string
 val getTopFans_xml : artist_id -> 'a Base.t -> string
 val getTopTags_xml : artist_id -> 'a Base.t -> string
 val getTopTracks_xml : artist_id -> 'a Base.t -> string
+
 val search : string -> ?limit:int -> ?page:int -> 'a Base.t -> string
 val getSimilar : string -> 'a Base.t -> (artist * float) list
 val getTopTags : string -> 'a Base.t -> (Tag.tag * int) list
+
+val parseSimilar : string -> (artist * float) list
+val parseTopTags : string -> (Tag.tag * int) list
+
+val getName : artist -> string	
+val getUrl : artist -> string
+val isStreamable : artist -> bool

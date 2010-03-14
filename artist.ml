@@ -76,8 +76,7 @@ let search name ?limit ?page connection =
 	searchXXX "artist" name ?limit ?page connection
 	
 
-let getTopTags name connection =
-	let xml = getTopTags_xml name connection in
+let parseTopTags xml = 
 	let tree = Parse_xml.make_tree xml in
 	let tag_trees = Parse_xml.find_all [Parse_xml.Name "lfm"; 
 			    	                          Parse_xml.Name "toptags";
@@ -96,9 +95,12 @@ let getTopTags name connection =
 		 int_of_string (Parse_xml.extract_value tag_count_value))
 	in
 	List.map makeTag tag_trees
+
+let getTopTags name connection =
+	let xml = getTopTags_xml name connection in
+	parseTopTags xml
 	
-let getSimilar name connection =
-	let xml = getSimilar_xml name connection in
+let parseSimilar xml =
 	let tree = Parse_xml.make_tree xml in
 	let artist_trees = Parse_xml.find_all [Parse_xml.Name "lfm";
 	                                       Parse_xml.Name "similarartists";
@@ -131,9 +133,18 @@ let getSimilar name connection =
 			float_of_string (Parse_xml.extract_value artist_match_value))
 		in
 		List.map extract_artist_info artist_trees
-			
 	
 	
+let getSimilar name connection =
+	let xml = getSimilar_xml name connection in
+	parseSimilar xml
+
+
+let getName artist =
+	artist.artist_name
 	
-  		 
+let getUrl artist =
+	artist.artist_url
 	
+let isStreamable artist =
+	artist.artist_streamable

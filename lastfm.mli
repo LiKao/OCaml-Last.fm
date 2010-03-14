@@ -7,6 +7,17 @@ type 'a t
 val init : string -> string -> string -> [`Unauthorized] t
 val authorize : 'a t -> string -> [`Authorized] t
 
+module Types : sig
+	type artist = {
+			artist_name   : string;
+			artist_mbid   : Base.mbid option;
+			artist_url    : string;
+			artist_images : Base.image list;
+			artist_streamable : bool}
+			
+	type tag = {tag_name : string; tag_url : string}
+end
+
 module Album : sig
 		
 	(** {1 Access to the Last.fm album.* functions}*)
@@ -107,15 +118,10 @@ module Artist : sig
 	type artist_id = string
 	(** Type of artist identifiers *)
 
-	type artist = {
-		artist_name   : string;
-		artist_mbid   : Base.mbid option;
-		artist_url    : string;
-		artist_images : Base.image list;
-		artist_streamable : bool} 
+	type artist = Types.artist
 
-	val getSimilar : string -> 'a t -> (artist * float) list
-	val getTopTags : string -> 'a t -> (Tag.tag * int) list
+	val getSimilar : string -> 'a t -> (Types.artist * float) list
+	val getTopTags : string -> 'a t -> (Types.tag * int) list
 
 	(*******************************************************************)
 	(** {2 direct access}*)
@@ -505,6 +511,13 @@ module Artist : sig
 			...
 		  </artistmatches>
 		</results>]}*)
+		
+		val parseSimilar : string -> (Types.artist * float) list
+		val parseTopTags : string -> (Types.tag * int) list
+		
+		val getName : artist -> string	
+		val getUrl : artist -> string
+		val isStreamable : artist -> bool
 end
 
 module Event : sig
@@ -538,5 +551,7 @@ module Geo : sig
 end
 
 module Tag : sig
-	type tag = {tag_name : string; tag_url : string}
+	type tag = Types.tag
+	val getName : tag -> string
+	val getUrl : tag -> string
 end

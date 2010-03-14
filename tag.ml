@@ -11,3 +11,9 @@ Tag.search*)
 type tag_id = string
 
 type tag = {tag_name : string; tag_url : string}
+
+let getName tag =
+	tag.tag_name
+	
+let getUrl tag =
+	tag.tag_url
