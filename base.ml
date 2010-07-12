@@ -20,11 +20,15 @@ let printf_debug level a =
       Printf.ifprintf stdout a
    ;;
 
+type connection =
+	{user_agent : string;
+	 pipeline : Http_client.pipeline}
+
 type 'a t = 
 	{key : string; 
 	 secret : string;
 	 session_key : string option; 
-	 agent : string};;
+	 connection : connection}
 
 type mbid = string;;
 
@@ -32,16 +36,14 @@ type param = (string * string) list
 
 let basename = "http://ws.audioscrobbler.com/2.0/";;
 
-let call_url agent url =
-	let res = Buffer.create 64 in
-	let wfun str = Buffer.add_string res str in
-	printf_debug Message "Initializing Curl connection and setting user agent\n";
-	let connection = Curl.init() in
-  Curl.set_useragent connection agent;
-	Curl.set_url connection url;
-	Curl.set_writefunction connection wfun;
-	Curl.perform connection;
-	Buffer.contents res;;
+let call_url connection url =
+	let call = new Http_client.get url in
+	let headers = call#request_header `Base in
+	headers#update_field "User-agent" connection.user_agent;
+	headers#update_field "Expect" "100-continue";
+	connection.pipeline#add call;
+	connection.pipeline#run ();
+	call#response_body#value
 
 let get_sig call secret=
   let sorted_call = List.sort (fun (a,_) (b,_) -> compare a b) call in
@@ -54,16 +56,16 @@ let get_sig call secret=
   printf_debug Signature "The full signature is: %s\n" fullsign;
   Digest.to_hex (Digest.string fullsign);;
 
-let make_call agent call secret = 
+let make_call connection call secret = 
    printf_debug Notice "Making a call to the Lastfm service\n";
 	 flush stdout;
    let url = Printf.sprintf "%s?%sapi_sig=%s" basename   
-      (List.fold_left (fun str (op,param) -> Printf.sprintf "%s%s=%s&" str op (Curl.escape param)) "" call)
+      (List.fold_left (fun str (op,param) -> Printf.sprintf "%s%s=%s&" str op (Netencoding.Url.encode param)) "" call)
       (get_sig call secret) 
    in
    printf_debug Url "The URL for this call is: %s\n" url;
 	 flush stdout;
-   let res = call_url agent url in
+   let res = call_url connection url in
 	 printf_debug Notice "Call succeeded\n";
 	 flush stdout;
 	 res;;
@@ -102,10 +104,14 @@ let get_session_key conn key secret =
  
 let init agent key secret =
 	printf_debug Message "Initializing Lastfm service\n";
+	let connection = {
+		user_agent = agent;
+		pipeline = new Http_client.pipeline}
+	in
   {key = key;
    secret = secret;
    session_key = None;
-   agent = agent}
+   connection = connection}
 
 let authorize connection session_key =
 	  {connection with session_key = Some session_key}
@@ -118,7 +124,7 @@ let call_method method_name params connection =
 								Some sk -> [("sk",sk)]
 							| None -> []
    in
-   make_call connection.agent call connection.secret
+   make_call connection.connection call connection.secret
 	
 let xxxgetyyy_xml xxx yyy id id_to_param ?extra connection =
   let params = id_to_param id in
