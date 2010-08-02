@@ -1,7 +1,7 @@
 name = "lastfm"
 version = "0.0.1"
 description = "OCaml interface to the last.fm API"
-requires = "netclient expat"
+requires = "netclient xml-light"
 archive(byte) = "lastfm.cma"
 archive(native) = "lastfm.cmxa"
 linkopts = ""

@@ -2,7 +2,7 @@ SOURCES:= lastfm.ml
 OC:= ocamlc
 OCNATIVE:= ocamlopt
 OCFIND:=ocamlfind
-PACKAGES:= netclient,expat
+PACKAGES:= netclient,xml-light
 
 OC_OPTS:=-annot
 

@@ -76,63 +76,69 @@ let search name ?limit ?page connection =
 	searchXXX "artist" name ?limit ?page connection
 	
 
+let (>>=) = Parse_xml.(>>=) 	
+
+let parse_tag =
+	(Parse_xml.extract "name"  >>= fun name  -> 
+	 Parse_xml.extract "url"   >>= fun url   ->
+	 Parse_xml.return {Tag.tag_name = name;Tag.tag_url = url})
+
+let parse_tag_count =
+	(parse_tag >>= fun tag ->
+	 Parse_xml.extract "count" >>= fun count ->
+	 Parse_xml.return (tag,int_of_string count))
+
 let parseTopTags xml = 
-	let tree = Parse_xml.make_tree xml in
-	let tag_trees = Parse_xml.find_all [Parse_xml.Name "lfm"; 
-			    	                          Parse_xml.Name "toptags";
-																			Parse_xml.Name "tag" ] tree
-	in
-	let makeTag tree = 
-		let tag_name_value = Parse_xml.find_all [Parse_xml.Name "name";
-		                                         Parse_xml.AnyVal] tree in
-    let tag_url_value = Parse_xml.find_all [Parse_xml.Name "url";
-		                                         Parse_xml.AnyVal] tree in
-    let tag_count_value = Parse_xml.find_all [Parse_xml.Name "count";
-		                                         Parse_xml.AnyVal] tree in																																												
-																						
-		({Tag.tag_name = Parse_xml.extract_value tag_name_value;
-		 Tag.tag_url = Parse_xml.extract_value tag_url_value},
-		 int_of_string (Parse_xml.extract_value tag_count_value))
-	in
-	List.map makeTag tag_trees
+	let parser data =
+		let toptags_node = Parse_xml.find_first_node data "toptags" in
+		Parse_xml.map_selective "tag" parse_tag_count toptags_node 
+	in  
+	Parse_xml.parse_response xml parser 
 
 let getTopTags name connection =
 	let xml = getTopTags_xml name connection in
 	parseTopTags xml
 	
+let parse_images xml =
+	let parse_image imagenode =
+		let size = Xml.attrib imagenode "size" in
+		try 
+			let url = Parse_xml.extract_pcdata imagenode in
+			Some {Lastfm_base.image_url = url;
+		 	      Lastfm_base.image_size = size}
+		with Failure _ ->
+			None
+	in
+	let imageoptions = Parse_xml.map_selective "image" parse_image xml in
+	List.fold_right (
+		function
+			Some image -> (fun images -> image::images)
+		| None -> (fun images -> images))
+		imageoptions []
+		
+let parse_artist =
+	(Parse_xml.extract "name" >>= fun name ->
+	 Parse_xml.extract_maybe "mbid" >>= fun mbid ->
+	 Parse_xml.extract "url"  >>= fun url  ->
+	 Parse_xml.extract "streamable" >>= fun streamable ->
+	 parse_images >>= fun images ->
+	 Parse_xml.return {artist_name   = name;
+		       artist_mbid   = mbid;
+			     artist_url    = url;
+			     artist_images = images;
+			     artist_streamable = (streamable = "1")})
+
+let parse_artist_match =
+	(parse_artist >>= fun artist ->
+	 Parse_xml.extract "match" >>= fun mtch ->
+	 Parse_xml.return (artist,float_of_string mtch))
+
 let parseSimilar xml =
-	let tree = Parse_xml.make_tree xml in
-	let artist_trees = Parse_xml.find_all [Parse_xml.Name "lfm";
-	                                       Parse_xml.Name "similarartists";
-																				 Parse_xml.Name "artist"] tree
-  in
-	let extract_artist_info artist_xml =
-		let artist_name_value = Parse_xml.find_all [Parse_xml.Name "name";
-		                                            Parse_xml.AnyVal] artist_xml in
-		let artist_mbid_value = Parse_xml.find_all [Parse_xml.Name "mbid";
-		                                            Parse_xml.AnyVal] artist_xml in
-		let artist_url_value  = Parse_xml.find_all [Parse_xml.Name "url";
-		                                            Parse_xml.AnyVal] artist_xml in
-		let artist_streamable_value = Parse_xml.find_all [Parse_xml.Name "streamable";
-		                                                  Parse_xml.AnyVal] artist_xml in
-    let artist_images_values = Parse_xml.find_all [Parse_xml.Name "image"] in
-		let artist_match_value = Parse_xml.find_all [Parse_xml.Name "match";
-		                                             Parse_xml.AnyVal] artist_xml in
-		let artist_mbid = 
-			try Some (Parse_xml.extract_value artist_mbid_value)
-			with Parse_xml.No_Value -> None
-		in
-		let artist_is_streamable = 
-			(int_of_string (Parse_xml.extract_value artist_streamable_value)) != 0
-		in
-		({artist_name   = Parse_xml.extract_value artist_name_value;
-		  artist_mbid   = artist_mbid;
-			artist_url    = Parse_xml.extract_value artist_url_value;
-			artist_images = [];
-			artist_streamable = artist_is_streamable},
-			float_of_string (Parse_xml.extract_value artist_match_value))
-		in
-		List.map extract_artist_info artist_trees
+	let parser data = 
+		let similarartists_node = Parse_xml.find_first_node data "similarartists" in
+		Parse_xml.map_selective "artist" parse_artist_match similarartists_node
+	in
+	Parse_xml.parse_response xml parser 
 	
 	
 let getSimilar name connection =
