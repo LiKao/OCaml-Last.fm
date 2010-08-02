@@ -2,6 +2,9 @@
 
 (** {1 global functions}*)
 (*******************************************************************)
+
+exception Lastfm_error of (int * string) 
+
 (** Type to identify connections to the Lastfm service *)
 type 'a t 
 val init : string -> string -> string -> [`Unauthorized] t

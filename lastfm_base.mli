@@ -2,6 +2,8 @@ type debug_lvl = Error | Message | Warning | Notice | Signature | Url
 val debug_lvl : debug_lvl list ref
 val printf_debug : debug_lvl -> ('a, out_channel, unit) format -> 'a
 
+exception Lastfm_error of (int * string) 
+
 type 'a t
 type mbid = string;;
 type param = (string * string) list

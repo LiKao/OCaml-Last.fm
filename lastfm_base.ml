@@ -13,12 +13,15 @@ let debug_lvl = ref[
    Signature;
    Url
    ];;
+
 let printf_debug level a =
    if  List.mem level !debug_lvl  then
       Printf.printf a
    else		
       Printf.ifprintf stdout a
    ;;
+
+exception Lastfm_error of (int * string) 
 
 type connection =
 	{user_agent : string;
