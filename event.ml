@@ -10,7 +10,7 @@ Event.share
 Event.shout
 *)
 
-open Base
+open Lastfm_base
 
 type event_id = int
 

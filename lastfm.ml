@@ -1,4 +1,4 @@
-include Base
+include Lastfm_base
 
 module Artist = struct 
 	include Artist
@@ -23,9 +23,9 @@ end
 module Types = struct
 	type artist = Artist.artist = {
 		artist_name   : string;
-		artist_mbid   : Base.mbid option;
+		artist_mbid   : Lastfm_base.mbid option;
 		artist_url    : string;
-		artist_images : Base.image list;
+		artist_images : Lastfm_base.image list;
 		artist_streamable : bool}
 	type tag = Tag.tag = {tag_name : string; tag_url : string}
 end

@@ -10,9 +10,9 @@ val authorize : 'a t -> string -> [`Authorized] t
 module Types : sig
 	type artist = {
 			artist_name   : string;
-			artist_mbid   : Base.mbid option;
+			artist_mbid   : Lastfm_base.mbid option;
 			artist_url    : string;
-			artist_images : Base.image list;
+			artist_images : Lastfm_base.image list;
 			artist_streamable : bool}
 			
 	type tag = {tag_name : string; tag_url : string}

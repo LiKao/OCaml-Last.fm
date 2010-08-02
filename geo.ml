@@ -8,7 +8,7 @@ Geo.getMetroWeeklyChartlist
 Geo.getTopArtists
 Geo.getTopTracks*)
 
-open Base
+open Lastfm_base
 
 type geoPos = {latitude: float; longitude: float}
 

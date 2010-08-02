@@ -8,7 +8,7 @@ Album.addTags
 Album.addTags
 *)
 
-open Base
+open Lastfm_base
 
 type album_id = {album_artist: string; album_name: string}
 

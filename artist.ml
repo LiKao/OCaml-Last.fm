@@ -19,7 +19,7 @@ Artist.removeTag
 Artist.share
 Artist.shout*)
 
-open Base
+open Lastfm_base
 
 type artist_id = string
 

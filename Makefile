@@ -8,11 +8,11 @@ OC_OPTS:=-annot
 
 DESTDIR:=`ocamlfind printconf destdir`/lastfm
 
-BASE_CMOS:= parse_xml.cmo base.cmo
+BASE_CMOS:= parse_xml.cmo lastfm_base.cmo
 MODULE_CMOS:= album.cmo event.cmo group.cmo library.cmo playlist.cmo tag.cmo user.cmo
 MODULE_CMOS:= $(MODULE_CMOS) artist.cmo geo.cmo radio.cmo tasteometer.cmo track.cmo venue.cmo
 
-BASE_CMXS:= parse_xml.cmx base.cmx
+BASE_CMXS:= parse_xml.cmx lastfm_base.cmx
 MODULE_CMXS:= album.cmx event.cmx group.cmx library.cmx playlist.cmx tag.cmx user.cmx
 MODULE_CMXS:= $(MODULE_CMXS) artist.cmx geo.cmx radio.cmx tasteometer.cmx track.cmx venue.cmx
 
