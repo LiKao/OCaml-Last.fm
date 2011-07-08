@@ -40,13 +40,26 @@ type param = (string * string) list
 let basename = "http://ws.audioscrobbler.com/2.0/";;
 
 let call_url connection url =
-	let call = new Http_client.get url in
-	let headers = call#request_header `Base in
-	headers#update_field "User-agent" connection.user_agent;
-	headers#update_field "Expect" "100-continue";
-	connection.pipeline#add call;
-	connection.pipeline#run ();
-	call#response_body#value
+  let rec loop i = 
+    try (
+      let call = new Http_client.get url in
+      let headers = call#request_header `Base in
+      headers#update_field "User-agent" connection.user_agent;
+      headers#update_field "Expect" "100-continue";
+      connection.pipeline#add call;
+      connection.pipeline#run ();
+      call#response_body#value )
+    with _ ->
+      if i < 5 then (
+        Unix.sleep 5;
+        Printf.printf "Connection failed -- retrying [ %i ]" i;
+        loop ( i + 1 ) )
+      else (
+        Printf.printf "Connection failed permanently -- leaving";
+        failwith "Connection failed" )
+  in
+  loop 0
+    
 
 let get_sig call secret=
   let sorted_call = List.sort (fun (a,_) (b,_) -> compare a b) call in

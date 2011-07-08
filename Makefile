@@ -1,7 +1,7 @@
 SOURCES:= lastfm.ml
 OC:= ocamlc
 OCNATIVE:= ocamlopt
-OCFIND:=ocamlfind
+OCFIND:=/opt/godi/bin/ocamlfind
 PACKAGES:= netclient,xml-light
 
 OC_OPTS:=-annot
@@ -63,7 +63,7 @@ install:
 
 .PHONY: uninstall
 uninstall:
-	ocamlfind remove lastfm
+	$(OCFIND) remove lastfm
         
 reinstall: uninstall install
 
